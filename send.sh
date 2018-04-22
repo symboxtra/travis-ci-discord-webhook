@@ -39,8 +39,10 @@ fi
 
 if [[ $TRAVIS_PULL_REQUEST != false ]]; then
   URL="https://github.com/$TRAVIS_REPO_SLUG/pull/$TRAVIS_PULL_REQUEST"
+  REPO_SLUG=$TRAVIS_REPO_SLUG
 else
   URL=""
+  REPO_SLUG=${TRAVIS_REPO_SLUG#*/} # Remove repo owner: symboxtra/project -> project
 fi
 
 TIMESTAMP=$(date --utc +%FT%TZ)
@@ -50,7 +52,7 @@ WEBHOOK_DATA='{
   "embeds": [ {
     "color": '$EMBED_COLOR',
     "author": {
-      "name": "'"$TRAVIS_REPO_SLUG"' - '"$STATUS_MESSAGE"' - Job #'"$TRAVIS_JOB_NUMBER"' (Build #'"$TRAVIS_BUILD_NUMBER"')",
+      "name": "'"$REPO_SLUG"' - '"$TRAVIS_OS_NAME"'\\nJob #'"$TRAVIS_JOB_NUMBER"' (Build #'"$TRAVIS_BUILD_NUMBER"') - '"$STATUS_MESSAGE"'",
       "url": "https://travis-ci.org/'"$TRAVIS_REPO_SLUG"'/builds/'"$TRAVIS_BUILD_ID"'",
       "icon_url": "'$AVATAR'"
     },
