@@ -37,11 +37,19 @@ else
   CREDITS="$AUTHOR_NAME authored & $COMMITTER_NAME committed"
 fi
 
+if [ "$TRAVIS_OS_NAME" == "osx" ]; then
+  OS_NAME="OSX"
+elif [ "$TRAVIS_OS_NAME" == "linux" ]; then
+  OS_NAME="Linux"
+else
+  OS_NAME="$TRAVIS_OS_NAME"
+fi
+
 if [[ $TRAVIS_PULL_REQUEST != false ]]; then
   URL="https://github.com/$TRAVIS_REPO_SLUG/pull/$TRAVIS_PULL_REQUEST"
   REPO_SLUG=$TRAVIS_REPO_SLUG
 else
-  URL=""
+  URL="https://github.com/$TRAVIS_REPO_SLUG/commit/$TRAVIS_COMMIT"
   REPO_SLUG=${TRAVIS_REPO_SLUG#*/} # Remove repo owner: symboxtra/project -> project
 fi
 
@@ -52,7 +60,7 @@ WEBHOOK_DATA='{
   "embeds": [ {
     "color": '$EMBED_COLOR',
     "author": {
-      "name": "'"$REPO_SLUG"' - '"$TRAVIS_OS_NAME"'\\nJob #'"$TRAVIS_JOB_NUMBER"' (Build #'"$TRAVIS_BUILD_NUMBER"') - '"$STATUS_MESSAGE"'",
+      "name": "#'"$TRAVIS_BUILD_NUMBER"' - '"$REPO_SLUG"' - '"$OS_NAME"' - '"$STATUS_MESSAGE"'",
       "url": "https://travis-ci.org/'"$TRAVIS_REPO_SLUG"'/builds/'"$TRAVIS_BUILD_ID"'",
       "icon_url": "'$AVATAR'"
     },
@@ -77,3 +85,4 @@ WEBHOOK_DATA='{
 
 (curl --fail --progress-bar -A "TravisCI-Webhook" -H Content-Type:application/json -H X-Author:k3rn31p4nic#8383 -d "$WEBHOOK_DATA" "$2" \
   && echo -e "\\n[Webhook]: Successfully sent the webhook.") || echo -e "\\n[Webhook]: Unable to send webhook."
+
