@@ -89,7 +89,9 @@ if [ "${#MATCHES[@]}" -gt 0 ]; then
     do
         HASH="$MATCH"
         BRANCH_NAME="$(git name-rev $HASH --name-only)"
-        COMMIT_SUBJECT="${COMMIT_SUBJECT//$HASH/${BRANCH_NAME:-$HASH}}"
+        if [[ ! -z "$BRANCH_NAME" ]]; then
+            COMMIT_SUBJECT="${COMMIT_SUBJECT//$HASH/${BRANCH_NAME:-$HASH}}"
+        fi
     done
 fi
 unset IFS
